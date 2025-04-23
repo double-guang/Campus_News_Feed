@@ -19,7 +19,7 @@
 
 ## 技术架构
 
-- **后端框架**：ASP.NET Core MVC (.NET 8.0)
+- **后端框架**：ASP.NET Core MVC (.NET 9.0)
 - **数据库**：MySQL (通过Entity Framework Core访问)
 - **前端技术**：
   - Bootstrap 5 - 响应式UI框架
@@ -75,7 +75,7 @@
 ## 安装与部署
 
 ### 系统要求
-- .NET 8.0 SDK
+- .NET 9.0 SDK
 - MySQL 8.0+
 - Visual Studio 2022+ 或 VS Code
 
@@ -105,7 +105,7 @@ dotnet run
 ## 默认账户
 
 系统初始化时会创建一个默认管理员账户：
-- 邮箱: 2964959746@qq.com
+- 邮箱: 
 - 密码: 在首次运行时需要设置
 
 ## 开发与扩展
