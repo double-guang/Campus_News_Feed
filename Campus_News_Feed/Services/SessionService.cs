@@ -7,69 +7,126 @@ namespace Campus_News_Feed.Services
 {
     public class SessionService : ISessionService
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _dbContext;
         private readonly ILogger<SessionService> _logger;
-        private const string UserSessionKey = "CurrentUser";
 
-        public SessionService(AppDbContext context, ILogger<SessionService> logger)
+        public SessionService(
+            AppDbContext dbContext,
+            ILogger<SessionService> logger)
         {
-            _context = context;
+            _dbContext = dbContext;
             _logger = logger;
         }
 
-        public async Task CreateUserSessionAsync(HttpContext httpContext, User user)
+        // 会话管理
+        public Task CreateSessionAsync(HttpContext httpContext, User user)
         {
             try
             {
-                // 保存用户ID到会话中
-                httpContext.Session.SetInt32(UserSessionKey, user.Id);
-                await httpContext.Session.CommitAsync();
+                httpContext.Session.SetString("UserId", user.Id.ToString());
+                httpContext.Session.SetString("Email", user.Email);
+                
+                if (user.IsAdmin)
+                {
+                    httpContext.Session.SetString("IsAdmin", "true");
+                }
+                
+                return Task.CompletedTask;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"创建用户会话失败: {ex.Message}");
+                _logger.LogError(ex, "创建会话时出错: {UserId}", user.Id);
                 throw;
             }
         }
 
+        public Task DestroySessionAsync(HttpContext httpContext)
+        {
+            try
+            {
+                httpContext.Session.Clear();
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "销毁会话时出错");
+                throw;
+            }
+        }
+
+        // 获取当前用户信息
         public async Task<User?> GetCurrentUserAsync(HttpContext httpContext)
         {
             try
             {
-                // 从会话中获取用户ID
-                var userId = httpContext.Session.GetInt32(UserSessionKey);
-                if (userId == null)
+                var userIdStr = httpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
                 {
                     return null;
                 }
 
-                // 获取用户信息
-                return await _context.Users.FindAsync(userId);
+                var user = await _dbContext.Users.FindAsync(userId);
+                
+                // 如果用户被注销，则清除会话并返回null
+                if (user != null && !user.IsActive)
+                {
+                    await DestroySessionAsync(httpContext);
+                    return null;
+                }
+                
+                return user;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"获取当前用户信息失败: {ex.Message}");
+                _logger.LogError(ex, "获取当前用户时出错");
                 return null;
             }
         }
 
-        public async Task<bool> IsAdminAsync(HttpContext httpContext)
-        {
-            var user = await GetCurrentUserAsync(httpContext);
-            return user?.IsAdmin ?? false;
-        }
-
-        public async Task ClearUserSessionAsync(HttpContext httpContext)
+        public Task<int> GetCurrentUserIdAsync(HttpContext httpContext)
         {
             try
             {
-                httpContext.Session.Remove(UserSessionKey);
-                await httpContext.Session.CommitAsync();
+                var userIdStr = httpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+                {
+                    return Task.FromResult(0);
+                }
+
+                return Task.FromResult(userId);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"清除用户会话失败: {ex.Message}");
-                throw;
+                _logger.LogError(ex, "获取当前用户ID时出错");
+                return Task.FromResult(0);
+            }
+        }
+
+        public Task<bool> IsAuthenticatedAsync(HttpContext httpContext)
+        {
+            try
+            {
+                var userIdStr = httpContext.Session.GetString("UserId");
+                return Task.FromResult(!string.IsNullOrEmpty(userIdStr));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "检查用户是否已认证时出错");
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<bool> IsAdminAsync(HttpContext httpContext)
+        {
+            try
+            {
+                var isAdmin = httpContext.Session.GetString("IsAdmin");
+                return Task.FromResult(isAdmin == "true");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "检查用户是否为管理员时出错");
+                return Task.FromResult(false);
             }
         }
     }

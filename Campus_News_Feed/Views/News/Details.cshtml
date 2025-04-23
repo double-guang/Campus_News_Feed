@@ -1,0 +1,66 @@
+@model NewsViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">@Model.Title</h2>
+        <span class="badge bg-primary">@Model.CategoryName</span>
+    </div>
+    <div class="card-body">
+        <div class="mb-3 d-flex justify-content-between text-muted small">
+            <div>
+                发布时间: @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <span>| 更新时间: @Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm")</span>
+                }
+            </div>
+            <div>
+                <i class="bi bi-eye"></i> @Model.ClickCount
+            </div>
+        </div>
+        <div class="news-content">
+            @Html.Raw(Model.Content.Replace(Environment.NewLine, "<br />"))
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-end">
+            @if (Context.Session.GetString("UserId") != null && Context.Session.GetString("IsAdmin") == "true")
+            {
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">编辑</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        删除
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Context.Session.GetString("UserId") != null && Context.Session.GetString("IsAdmin") == "true")
+{
+    <!-- 删除确认弹窗 -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">确认删除</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    确定要删除新闻"@Model.Title"吗？此操作不可撤销。
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger">确认删除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+} 

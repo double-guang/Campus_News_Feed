@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "验证登录";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>登录验证</h2>
+            </div>
+            <div class="card-body text-center">
+                @if (ViewBag.Success == true)
+                {
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: green;"></i>
+                    </div>
+                    <h4>登录成功！</h4>
+                    <p>您已成功登录。</p>
+                    <div class="alert alert-info mt-3">
+                        <small>提示：如果您之前有未关闭的登录页面，现在刷新该页面将直接进入首页。</small>
+                    </div>
+                    <div class="mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">返回首页</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-4">
+                        <i class="bi bi-x-circle-fill" style="font-size: 3rem; color: red;"></i>
+                    </div>
+                    <h4>验证失败</h4>
+                    <p>您的登录链接无效或已过期。</p>
+                    <div class="mt-4">
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-primary">重新登录</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">返回首页</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

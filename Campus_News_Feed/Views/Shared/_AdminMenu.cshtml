@@ -1,0 +1,29 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        管理菜单
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            <a asp-controller="Admin" asp-action="Index" 
+               class="list-group-item list-group-item-action @(controller == "Admin" ? "active" : "")">
+                <i class="bi bi-speedometer2"></i> 管理首页
+            </a>
+            <a asp-controller="AdminCategory" asp-action="Index" 
+               class="list-group-item list-group-item-action @(controller == "AdminCategory" ? "active" : "")">
+                <i class="bi bi-tags"></i> 分类管理
+            </a>
+            <a asp-controller="News" asp-action="Index" 
+               class="list-group-item list-group-item-action">
+                <i class="bi bi-newspaper"></i> 新闻列表
+            </a>
+            <a asp-controller="Admin" asp-action="Users" 
+               class="list-group-item list-group-item-action @(controller == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")">
+                <i class="bi bi-people"></i> 用户管理
+            </a>
+        </div>
+    </div>
+</div> 

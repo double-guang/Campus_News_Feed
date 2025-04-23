@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "注册";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>注册账号</h2>
+            </div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                
+                <form method="post" asp-controller="Auth" asp-action="Register" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">邮箱地址</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="请输入您的吉林大学邮箱" required>
+                            <div class="invalid-feedback">请输入有效的邮箱地址</div>
+                        </div>
+                        <div class="form-text mt-2">
+                            系统仅支持吉林大学邮箱：@(string.Join(", ", new string[] { "@mails.jlu.edu.cn", "@jlu.edu.cn" }))
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mb-3">
+                        <strong>无密码登录系统</strong> - 我们使用邮箱验证链接进行注册和登录，无需记忆复杂密码。
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">发送验证邮件</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                已有账号？<a asp-controller="Auth" asp-action="Login">立即登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+// 表单验证
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+} 

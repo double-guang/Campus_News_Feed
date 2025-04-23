@@ -1,0 +1,73 @@
+@model UserProfileViewModel
+@{
+    ViewData["Title"] = "个人中心";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header" style="background-color: #e8efe8; color: #455148; font-weight: 600;">
+                <h3 class="mb-0">个人信息</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">邮箱</label>
+                    <p>@Model.Email</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">注册时间</label>
+                    <p>@Model.RegisteredAt.ToString("yyyy-MM-dd HH:mm")</p>
+                </div>
+                @if (Model.LastLoginAt.HasValue)
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">上次登录</label>
+                        <p>@Model.LastLoginAt.Value.ToString("yyyy-MM-dd HH:mm")</p>
+                    </div>
+                }
+                @if (Model.IsAdmin)
+                {
+                    <div class="mb-3">
+                        <div class="badge bg-primary">管理员</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header" style="background-color: #e8efe8; color: #455148; font-weight: 600;">
+                <h3 class="mb-0">新闻偏好设置</h3>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                
+                <form asp-action="UpdatePreferences" method="post">
+                    <p>选择您感兴趣的新闻分类，系统将根据您的偏好推荐新闻：</p>
+                    
+                    <div class="mb-3">
+                        @foreach (var category in Model.AllCategories)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="category_@category.Id" 
+                                       name="SelectedCategories" value="@category.Id"
+                                       @(Model.SelectedCategories.Contains(category.Id) ? "checked" : "") />
+                                <label class="form-check-label" for="category_@category.Id">
+                                    @category.Name - @category.Description
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">保存偏好设置</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 

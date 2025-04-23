@@ -10,6 +10,7 @@ namespace Campus_News_Feed.Controllers
         private readonly INewsService _newsService;
         private readonly ISessionService _sessionService;
         private readonly ILogger<NewsController> _logger;
+        private const int PageSize = 30;
 
         public NewsController(
             INewsService newsService,
@@ -22,55 +23,51 @@ namespace Campus_News_Feed.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            int? page, 
+            string? searchTerm = null, 
+            int? categoryId = null, 
+            DateTime? dateFrom = null, 
+            DateTime? dateTo = null, 
+            string sort = "comprehensive")
         {
-            var newsList = await _newsService.GetAllNewsAsync();
+            int pageNumber = page ?? 1;
+            var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
+            int? userId = currentUser?.Id;
+
+            // 将排序参数转换为枚举
+            NewsSortOption sortOption = GetSortOptionFromString(sort);
+            
+            // 使用带筛选功能的方法获取新闻列表
+            var paginatedNews = await _newsService.GetFilteredNewsAsync(
+                pageNumber, 
+                PageSize, 
+                searchTerm, 
+                categoryId, 
+                dateFrom, 
+                dateTo, 
+                sortOption);
+            
+            // 获取所有分类用于分类筛选下拉列表
+            var categories = await _newsService.GetAllCategoriesAsync();
+            ViewBag.Categories = categories;
+            
             var viewModel = new NewsListViewModel
             {
-                News = newsList.Select(NewsViewModel.FromNews).ToList(),
-                IsRecommended = false
+                News = paginatedNews.Select(NewsViewModel.FromNews).ToList(),
+                CurrentPage = pageNumber,
+                TotalPages = paginatedNews.TotalPages,
+                HasNextPage = paginatedNews.HasNextPage,
+                HasPreviousPage = paginatedNews.HasPreviousPage,
+                SortOption = sortOption,
+                SearchTerm = searchTerm,
+                FilterCategoryId = categoryId,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                TotalItems = paginatedNews.TotalItems
             };
 
             return View(viewModel);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Category(int id)
-        {
-            var category = (await _newsService.GetAllCategoriesAsync()).FirstOrDefault(c => c.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            var newsList = await _newsService.GetNewsByCategoryIdAsync(id);
-            var viewModel = new NewsListViewModel
-            {
-                News = newsList.Select(NewsViewModel.FromNews).ToList(),
-                CategoryName = category.Name,
-                IsRecommended = false
-            };
-
-            return View("Index", viewModel);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Recommended()
-        {
-            var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
-            if (currentUser == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
-            var recommendedNews = await _newsService.GetRecommendedNewsForUserAsync(currentUser.Id);
-            var viewModel = new NewsListViewModel
-            {
-                News = recommendedNews.Select(NewsViewModel.FromNews).ToList(),
-                IsRecommended = true
-            };
-
-            return View("Index", viewModel);
         }
 
         [HttpGet]
@@ -79,10 +76,10 @@ namespace Campus_News_Feed.Controllers
             var news = await _newsService.GetNewsByIdAsync(id);
             if (news == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
-            // 增加点击计数
+            // 增加点击量
             await _newsService.IncrementClickCountAsync(id);
 
             var viewModel = NewsViewModel.FromNews(news);
@@ -90,132 +87,110 @@ namespace Campus_News_Feed.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> ByCategory(
+            int categoryId, 
+            int? page, 
+            string? searchTerm = null, 
+            DateTime? dateFrom = null, 
+            DateTime? dateTo = null, 
+            string sort = "comprehensive")
         {
-            // 验证是否为管理员
-            if (!await _sessionService.IsAdminAsync(HttpContext))
+            var category = await _newsService.GetCategoryByIdAsync(categoryId);
+            if (category == null)
             {
-                return Forbid();
+                return View("NotFound");
             }
 
+            int pageNumber = page ?? 1;
+            var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
+            int? userId = currentUser?.Id;
+
+            // 将排序参数转换为枚举
+            NewsSortOption sortOption = GetSortOptionFromString(sort);
+            
+            // 使用带筛选功能的方法获取新闻列表
+            var paginatedNews = await _newsService.GetFilteredNewsAsync(
+                pageNumber, 
+                PageSize, 
+                searchTerm, 
+                categoryId, 
+                dateFrom, 
+                dateTo, 
+                sortOption);
+            
+            // 获取所有分类用于分类筛选下拉列表
             var categories = await _newsService.GetAllCategoriesAsync();
-            var viewModel = new NewsCreateViewModel
+            ViewBag.Categories = categories;
+            
+            var viewModel = new NewsListViewModel
             {
-                Categories = categories.ToList()
+                News = paginatedNews.Select(NewsViewModel.FromNews).ToList(),
+                CategoryName = category.Name,
+                CurrentPage = pageNumber,
+                TotalPages = paginatedNews.TotalPages,
+                HasNextPage = paginatedNews.HasNextPage,
+                HasPreviousPage = paginatedNews.HasPreviousPage,
+                CategoryId = categoryId,
+                SortOption = sortOption,
+                SearchTerm = searchTerm,
+                FilterCategoryId = categoryId,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                TotalItems = paginatedNews.TotalItems
             };
 
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(NewsCreateViewModel model)
-        {
-            // 验证是否为管理员
-            if (!await _sessionService.IsAdminAsync(HttpContext))
+        // 辅助方法：将字符串转换为排序选项
+        private NewsSortOption GetSortOptionFromString(string sort)
             {
-                return Forbid();
-            }
-
-            if (!ModelState.IsValid)
+            return sort.ToLower() switch
             {
-                model.Categories = (await _newsService.GetAllCategoriesAsync()).ToList();
-                return View(model);
-            }
-
-            var news = new News
-            {
-                Title = model.Title,
-                Content = model.Content,
-                CategoryId = model.CategoryId
+                "timeasc" => NewsSortOption.TimeAsc,
+                "timedesc" => NewsSortOption.TimeDesc,
+                _ => NewsSortOption.Comprehensive
             };
+        }
 
-            await _newsService.CreateNewsAsync(news);
-            TempData["SuccessMessage"] = "新闻发布成功";
-            return RedirectToAction("Index", "Admin");
+        // 以下方法重定向到管理后台
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
+            if (currentUser == null || !currentUser.IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // 重定向到管理后台的新闻添加页面
+            return RedirectToAction("AddNews", "Admin");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            // 验证是否为管理员
-            if (!await _sessionService.IsAdminAsync(HttpContext))
+            var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
+            if (currentUser == null || !currentUser.IsAdmin)
             {
-                return Forbid();
+                return RedirectToAction("Login", "Auth");
             }
 
-            var news = await _newsService.GetNewsByIdAsync(id);
-            if (news == null)
-            {
-                return NotFound();
-            }
-
-            var categories = await _newsService.GetAllCategoriesAsync();
-            var viewModel = new NewsEditViewModel
-            {
-                Id = news.Id,
-                Title = news.Title,
-                Content = news.Content,
-                CategoryId = news.CategoryId,
-                Categories = categories.ToList()
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(NewsEditViewModel model)
-        {
-            // 验证是否为管理员
-            if (!await _sessionService.IsAdminAsync(HttpContext))
-            {
-                return Forbid();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                model.Categories = (await _newsService.GetAllCategoriesAsync()).ToList();
-                return View(model);
-            }
-
-            var news = new News
-            {
-                Id = model.Id,
-                Title = model.Title,
-                Content = model.Content,
-                CategoryId = model.CategoryId
-            };
-
-            var result = await _newsService.UpdateNewsAsync(model.Id, news);
-            if (result == null)
-            {
-                TempData["ErrorMessage"] = "更新新闻失败";
-                return RedirectToAction("Index", "Admin");
-            }
-
-            TempData["SuccessMessage"] = "新闻更新成功";
-            return RedirectToAction("Index", "Admin");
+            // 重定向到管理后台的新闻编辑页面
+            return RedirectToAction("EditNews", "Admin", new { id = id });
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            // 验证是否为管理员
-            if (!await _sessionService.IsAdminAsync(HttpContext))
+            var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
+            if (currentUser == null || !currentUser.IsAdmin)
             {
-                return Forbid();
+                return RedirectToAction("Login", "Auth");
             }
 
-            var result = await _newsService.DeleteNewsAsync(id);
-            if (result)
-            {
-                TempData["SuccessMessage"] = "新闻删除成功";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "删除新闻失败";
-            }
-
-            return RedirectToAction("Index", "Admin");
+            // 重定向到管理后台
+            return RedirectToAction("News", "Admin");
         }
     }
 } 

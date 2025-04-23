@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "注册确认";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>注册确认</h2>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="bi bi-envelope-check" style="font-size: 3rem; color: green;"></i>
+                </div>
+                <h4>验证邮件已发送</h4>
+                
+                @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+                {
+                    <div class="alert alert-success">
+                        @ViewBag.SuccessMessage
+                    </div>
+                }
+                else
+                {
+                    <p>我们已向您的邮箱发送了一封验证邮件，请查收并点击邮件中的链接完成注册。</p>
+                    <p>如果您没有收到邮件，请检查垃圾邮件文件夹。</p>
+                }
+            </div>
+            <div class="card-footer text-center">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">返回首页</a>
+                <a asp-controller="Auth" asp-action="Login" class="btn btn-primary">前往登录</a>
+            </div>
+        </div>
+    </div>
+</div> 

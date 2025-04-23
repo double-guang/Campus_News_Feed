@@ -1,6 +1,8 @@
+using Campus_News_Feed.Data;
 using Campus_News_Feed.Models.ViewModels;
 using Campus_News_Feed.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Campus_News_Feed.Controllers
 {
@@ -9,33 +11,46 @@ namespace Campus_News_Feed.Controllers
         private readonly INewsService _newsService;
         private readonly ISessionService _sessionService;
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _dbContext;
+        private const int PageSize = 30;
+        private const int HomePageNewsCount = 10;
 
         public HomeController(
             INewsService newsService,
             ISessionService sessionService,
-            ILogger<HomeController> logger)
+            ILogger<HomeController> logger,
+            AppDbContext dbContext)
         {
             _newsService = newsService;
             _sessionService = sessionService;
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         public async Task<IActionResult> Index()
         {
             var currentUser = await _sessionService.GetCurrentUserAsync(HttpContext);
             
-            // 如果用户已登录，默认展示推荐新闻
+            IEnumerable<Models.Domain.News> recommendedNews;
+            
             if (currentUser != null)
             {
-                return RedirectToAction("Recommended", "News");
+                // 已登录用户：基于用户偏好、点击量和时间推荐
+                recommendedNews = await _newsService.GetRecommendedNewsAsync(currentUser.Id);
             }
-
-            // 未登录用户展示所有新闻
-            var newsList = await _newsService.GetAllNewsAsync();
+            else
+            {
+                // 未登录用户：基于点击量和时间推荐热门新闻
+                recommendedNews = await _newsService.GetHotNewsAsync(HomePageNewsCount);
+            }
+            
             var viewModel = new NewsListViewModel
             {
-                News = newsList.Select(NewsViewModel.FromNews).ToList(),
-                IsRecommended = false
+                News = recommendedNews.Take(HomePageNewsCount).Select(NewsViewModel.FromNews).ToList(),
+                CurrentPage = 1,
+                TotalPages = 1, // 首页只显示一页
+                HasNextPage = false,
+                HasPreviousPage = false
             };
 
             return View(viewModel);
@@ -56,6 +71,18 @@ namespace Campus_News_Feed.Controllers
         [HttpGet]
         public IActionResult Error()
         {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Debug()
+        {
+            var users = await _dbContext.Users.ToListAsync();
+            var tokens = await _dbContext.Tokens.ToListAsync();
+            
+            ViewBag.Users = users;
+            ViewBag.Tokens = tokens;
+            
             return View();
         }
     }

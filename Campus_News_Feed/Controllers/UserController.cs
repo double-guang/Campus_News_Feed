@@ -7,19 +7,19 @@ namespace Campus_News_Feed.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        private readonly ISessionService _sessionService;
         private readonly INewsService _newsService;
+        private readonly ISessionService _sessionService;
         private readonly ILogger<UserController> _logger;
 
         public UserController(
             IUserService userService,
-            ISessionService sessionService,
             INewsService newsService,
+            ISessionService sessionService,
             ILogger<UserController> logger)
         {
             _userService = userService;
-            _sessionService = sessionService;
             _newsService = newsService;
+            _sessionService = sessionService;
             _logger = logger;
         }
 
@@ -38,8 +38,11 @@ namespace Campus_News_Feed.Controllers
             var viewModel = new UserProfileViewModel
             {
                 Email = currentUser.Email,
-                AllCategories = allCategories.ToList(),
-                SelectedCategoryIds = userPreferences.Select(p => p.Id).ToList()
+                RegisteredAt = currentUser.RegisteredAt,
+                LastLoginAt = currentUser.LastLoginAt,
+                IsAdmin = currentUser.IsAdmin,
+                SelectedCategories = userPreferences.Select(p => p.CategoryId).ToList(),
+                AllCategories = allCategories.ToList()
             };
 
             return View(viewModel);
@@ -54,16 +57,9 @@ namespace Campus_News_Feed.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var success = await _userService.UpdateUserPreferencesAsync(currentUser.Id, model.SelectedCategoryIds);
-            if (success)
-            {
-                TempData["SuccessMessage"] = "偏好设置已更新";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "更新偏好设置失败";
-            }
-
+            await _userService.UpdateUserPreferencesAsync(currentUser.Id, model.SelectedCategories);
+            
+            TempData["SuccessMessage"] = "偏好设置已更新";
             return RedirectToAction("Profile");
         }
     }

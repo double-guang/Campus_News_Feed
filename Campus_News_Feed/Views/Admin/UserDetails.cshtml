@@ -1,0 +1,160 @@
+@model Campus_News_Feed.Models.ViewModels.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "用户详情";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="bi bi-person"></i> 用户详情</h2>
+        <p class="text-muted">查看用户详细信息</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a asp-controller="Admin" asp-action="Users" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> 返回用户列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header" style="background-color: #e8efe8; color: #455148; font-weight: 600;">
+                <i class="bi bi-info-circle"></i> 基本信息
+            </div>
+            <div class="card-body">
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">用户ID:</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-plaintext">@Model.Id</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">邮箱:</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-plaintext">@Model.Email</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">用户名:</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-plaintext">@(string.IsNullOrEmpty(Model.Username) ? "-" : Model.Username)</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">注册时间:</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-plaintext">@Model.RegisteredAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">最后登录:</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-plaintext">@(Model.LastLoginAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "从未登录")</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">账号状态:</label>
+                    <div class="col-sm-8">
+                        @* 临时硬编码活跃状态 *@
+                        <span class="badge bg-success">活跃</span>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label fw-bold">用户角色:</label>
+                    <div class="col-sm-8">
+                        @if (Model.IsAdmin)
+                        {
+                            <span class="badge bg-warning text-dark">管理员</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">普通用户</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header" style="background-color: #e8efe8; color: #455148; font-weight: 600;">
+                <i class="bi bi-tags"></i> 用户偏好设置
+            </div>
+            <div class="card-body">
+                @if (!Model.UserPreferences.Any())
+                {
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 该用户尚未设置任何新闻偏好。
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">选择的新闻分类:</label>
+                        <div class="border p-3 rounded">
+                            @foreach (var category in Model.UserPreferences)
+                            {
+                                <span class="badge bg-primary me-2 mb-2 p-2">@category.Name</span>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <h6 class="fw-bold">所有可用分类:</h6>
+                    <div class="border p-3 rounded">
+                        @foreach (var category in Model.AllCategories)
+                        {
+                            <span class="badge @(Model.UserPreferences.Any(c => c.Id == category.Id) ? "bg-primary" : "bg-secondary") me-2 mb-2 p-2">@category.Name</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.IsAdmin)
+{
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-danger">
+                <div class="card-header" style="background-color: #fff0f0; color: #dc3545; font-weight: 600;">
+                    <i class="bi bi-exclamation-triangle"></i> 危险操作区
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">注销用户账号</h5>
+                    <p class="card-text">注销后用户将无法登录系统，且所有偏好设置将被清除。此操作不可逆！</p>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                        <i class="bi bi-person-x"></i> 注销此用户
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注销用户确认弹窗 -->
+    <div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deactivateModalLabel">确认注销用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>您确定要注销用户 <strong>@Model.Email</strong> 吗？</p>
+                    <p class="text-danger">注意：注销后该用户将无法登录系统，且所有偏好设置将被清除。此操作不可逆！</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <form asp-controller="Admin" asp-action="DeactivateUser" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger">确认注销</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+} 

@@ -1,0 +1,66 @@
+@model Campus_News_Feed.Models.ViewModels.AdminLoginViewModel
+
+@{
+    ViewData["Title"] = "管理员登录";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card border-success">
+            <div class="card-header bg-morandigreen">
+                <h2 class="text-center">管理员登录</h2>
+                <p class="text-center mb-0"><i class="bi bi-shield-lock"></i> 仅限授权管理员访问</p>
+            </div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <form asp-action="Login" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input asp-for="Username" class="form-control" placeholder="输入管理员用户名" autofocus />
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="输入管理员密码" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">管理员登录</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <div class="small text-muted">普通用户？<a asp-controller="Auth" asp-action="Login">前往用户登录</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

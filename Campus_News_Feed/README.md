@@ -1,118 +1,147 @@
 # 校园新闻推送系统
 
-基于.NET9的简洁架构设计的校园新闻推送系统。
+校园新闻推送系统是一个基于ASP.NET Core MVC的综合性新闻发布与管理平台，专为校园环境设计，提供个性化新闻推荐、分类浏览、搜索筛选等功能。系统采用莫兰迪色系的UI设计，美观且易于使用。
 
-## 项目架构
+## 主要功能
 
-### 技术栈
-- 后端: .NET 9, ASP.NET Core MVC
-- 数据库: Entity Framework Core + MySQL
-- 前端: Razor Pages + Bootstrap
+### 用户功能
+- **个性化新闻推荐**：基于用户偏好设置的智能推荐算法
+- **分类浏览**：按不同新闻分类查看相关内容
+- **搜索与筛选**：支持关键词搜索、分类筛选、日期范围筛选
+- **排序选项**：支持综合排序、最新发布、最早发布等多种排序方式
+- **用户偏好设置**：用户可设置感兴趣的新闻分类，获取个性化内容
 
-### 目录结构
+### 管理功能
+- **新闻管理**：添加、编辑、删除新闻内容
+- **分类管理**：创建和管理新闻分类
+- **用户管理**：查看用户信息、管理用户状态
+- **数据分析**：查看新闻点击量、分类热度等统计信息
+
+## 技术架构
+
+- **后端框架**：ASP.NET Core MVC (.NET 8.0)
+- **数据库**：MySQL (通过Entity Framework Core访问)
+- **前端技术**：
+  - Bootstrap 5 - 响应式UI框架
+  - jQuery - JavaScript库
+  - Bootstrap Icons - 图标库
+- **主要设计模式**：
+  - MVC架构模式
+  - 仓储模式
+  - 依赖注入
+  - 服务层模式
+
+## 系统架构
+
 ```
-Campus_News_Feed/
-├── Controllers/        # 控制器目录
-├── Models/             # 数据模型
-│   ├── Domain/         # 领域模型
-│   ├── DTOs/           # 数据传输对象
-│   └── ViewModels/     # 视图模型
-├── Views/              # 视图文件
-├── Services/           # 业务逻辑服务
-├── Data/               # 数据访问相关
-│   └── Repositories/   # 仓储模式实现
-├── Utilities/          # 工具类
-├── wwwroot/            # 静态资源文件
-└── Program.cs          # 应用程序入口
+校园新闻推送系统
+├── Controllers/          # 控制器层，处理请求和响应
+├── Models/               # 数据模型层
+│   ├── Domain/           # 领域模型
+│   └── ViewModels/       # 视图模型
+├── Views/                # 视图层，负责UI展示
+├── Services/             # 服务层，处理业务逻辑
+├── Data/                 # 数据访问层
+├── Migrations/           # 数据库迁移文件
+└── wwwroot/              # 静态资源文件
+    ├── css/              # 样式文件
+    ├── js/               # JavaScript文件
+    └── images/           # 图片资源
 ```
 
-### 核心功能模块
-1. **认证模块** - 基于邮箱令牌的无密码认证
-2. **用户模块** - 用户信息管理和新闻偏好设置
-3. **新闻模块** - 新闻内容管理和展示
-4. **推荐模块** - 基于用户偏好的新闻推荐
-5. **管理模块** - 管理员后台功能
+## 特色功能详解
 
-### 数据模型
-- User: 用户信息
-- News: 新闻内容
-- Category: 新闻分类
-- UserPreference: 用户偏好设置
-- Token: 认证令牌
+### 新闻推荐算法
 
-## 功能说明
+系统使用基于多因素加权的推荐算法，综合考虑：
+- 用户偏好的分类匹配度
+- 新闻时效性（使用指数衰减函数）
+- 新闻热度（点击量）
+- 特殊时段加权（近期发布的新闻获得额外加分）
 
-### 用户端功能
+### 搜索与筛选系统
 
-1. **注册与登录**
-   - 基于邮箱验证的无密码登录
-   - 支持学校邮箱域名验证
-   - 通过邮件链接完成注册和登录
+- **全文检索**：针对标题和内容的关键词搜索
+- **多维度筛选**：支持分类、日期范围的组合筛选
+- **智能排序**：根据不同条件提供适合的排序方式
 
-2. **个人信息管理**
-   - 查看个人信息
-   - 设置新闻偏好（选择感兴趣的新闻类别）
+### 用户体验优化
 
-3. **新闻推荐**
-   - 根据用户偏好自动推荐新闻
-   - 基于历史点击率排序
+- **响应式设计**：适配不同尺寸的设备
+- **莫兰迪色系UI**：舒适的视觉体验
+- **渐进式交互**：操作简单直观
+- **分页优化**：大数据量下的高效浏览体验
 
-4. **新闻分类查询**
-   - 按分类浏览新闻
-   - 新闻点击率统计
+## 安装与部署
 
-### 管理员端功能
+### 系统要求
+- .NET 8.0 SDK
+- MySQL 8.0+
+- Visual Studio 2022+ 或 VS Code
 
-1. **管理员登录**
-   - 基于预设管理员账号
+### 数据库配置
+1. 创建MySQL数据库：
+```sql
+CREATE DATABASE campus_news CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-2. **新闻管理**
-   - 添加新闻
-   - 修改新闻
-   - 删除新闻
+2. 在`appsettings.json`中配置连接字符串：
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost;Database=campus_news;User=your_user;Password=your_password;"
+}
+```
 
-## 如何启动
+3. 应用数据库迁移：
+```bash
+dotnet ef database update
+```
 
-1. **准备开发环境**
-   - 安装 .NET 9 SDK
-   - 安装MySQL服务器
-   - 确保已安装Entity Framework Core工具
+### 启动项目
+```bash
+dotnet run
+```
 
-2. **克隆代码库**
-   ```bash
-   git clone https://github.com/your-repo/Campus_News_Feed.git
-   cd Campus_News_Feed
-   ```
+## 默认账户
 
-3. **设置数据库**
-   - 创建MySQL数据库
-   ```bash
-   mysql -u root -p < setup-database.sql
-   ```
-   - 编辑 `appsettings.json` 中的连接字符串，设置正确的MySQL服务器信息
+系统初始化时会创建一个默认管理员账户：
+- 邮箱: 2964959746@qq.com
+- 密码: 在首次运行时需要设置
 
-4. **配置应用**
-   - 编辑 `appsettings.json` 配置文件
-   - 配置邮件服务器设置
-   - 配置学校邮箱域名
+## 开发与扩展
 
-5. **运行应用**
-   ```bash
-   dotnet run
-   ```
+### 添加新功能
+1. 在相应的Model文件夹中添加模型类
+2. 在Services中实现业务逻辑
+3. 在Controllers中添加控制器方法
+4. 创建或修改Views中的视图文件
 
-6. **访问应用**
-   - 浏览器访问: https://localhost:7173
+### 样式定制
+系统使用了自定义的莫兰迪色系变量，可在`site.css`中进行修改：
+```css
+:root {
+  --morandigreen-100: #e8efe8;
+  --morandigreen-200: #d1e0d3;
+  /* 更多颜色变量... */
+}
+```
 
-## 默认账号
+## 代码规范
 
-系统初始化时会创建默认管理员账号:
-- 邮箱: admin@school.edu
-- 登录方式: 与普通用户相同，通过邮箱验证链接
+项目遵循以下代码规范：
+- C# 代码风格遵循Microsoft推荐的.NET编码约定
+- 视图文件使用Pascal命名法
+- 服务接口以"I"开头
+- 使用视图模型传递数据，避免使用ViewBag/ViewData
 
-### API设计
-- 用户认证API
-- 用户信息管理API
-- 新闻内容API
-- 新闻分类API
-- 管理员API 
+## 致谢
+
+感谢所有为本项目做出贡献的开发者，以及使用到的开源项目：
+- ASP.NET Core
+- Entity Framework Core
+- Bootstrap
+- jQuery
+
+## 许可证
+
+本项目采用[MIT许可证](LICENSE)。 

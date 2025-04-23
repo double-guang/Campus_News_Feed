@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "管理后台";
+}
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="bg-morandigreen p-4 rounded-3 shadow-sm">
+            <h2><i class="bi bi-gear-fill"></i> 管理后台</h2>
+            <p class="lead">欢迎使用校园新闻推送系统管理后台</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-newspaper"></i> 新闻管理</h5>
+                <p class="card-text">添加、编辑和删除系统中的新闻内容。</p>
+                <a asp-controller="Admin" asp-action="News" class="btn btn-sm btn-primary">管理新闻</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-tags"></i> 分类管理</h5>
+                <p class="card-text">管理系统中的新闻分类。</p>
+                <a asp-controller="AdminCategory" asp-action="Index" class="btn btn-sm btn-primary">管理分类</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-people"></i> 用户管理</h5>
+                <p class="card-text">查看和管理系统用户。</p>
+                <a asp-controller="Admin" asp-action="Users" class="btn btn-sm btn-primary">管理用户</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-bar-chart"></i> 系统统计</h5>
+                <p class="card-text">查看系统使用统计数据。</p>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <h3 id="newsCount">-</h3>
+                            <p class="mb-0">新闻数量</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <h3 id="userCount">-</h3>
+                            <p class="mb-0">用户数量</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            console.log("系统统计加载中...");
+            
+            // 显示加载中提示
+            $('#newsCount').html('<small class="text-muted">加载中...</small>');
+            $('#userCount').html('<small class="text-muted">加载中...</small>');
+            
+            // 获取系统统计数据
+            $.ajax({
+                url: '@Url.Action("GetSystemStats", "Admin")',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    console.log("获取统计数据成功:", data);
+                    $('#newsCount').text(data.newsCount);
+                    $('#userCount').text(data.userCount);
+                },
+                error: function(xhr, status, error) {
+                    console.error("获取统计数据失败:", status, error);
+                    console.error("响应:", xhr.responseText);
+                    $('#newsCount').text('获取失败');
+                    $('#userCount').text('获取失败');
+                }
+            });
+        });
+    </script>
+} 

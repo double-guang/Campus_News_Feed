@@ -19,19 +19,42 @@ namespace Campus_News_Feed.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // 配置MySQL字符集和排序规则
-            modelBuilder.Entity<User>().ToTable("Users", tb => tb.HasCharSet("utf8mb4"));
-            modelBuilder.Entity<Category>().ToTable("Categories", tb => tb.HasCharSet("utf8mb4"));
-            modelBuilder.Entity<News>().ToTable("News", tb => tb.HasCharSet("utf8mb4"));
-            modelBuilder.Entity<UserPreference>().ToTable("UserPreferences", tb => tb.HasCharSet("utf8mb4"));
-            modelBuilder.Entity<Token>().ToTable("Tokens", tb => tb.HasCharSet("utf8mb4"));
+            // 检查数据库提供程序
+            var isMySql = Database.ProviderName?.Contains("MySql") ?? false;
+
+            // 配置表名
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Category>().ToTable("Categories");
+            modelBuilder.Entity<News>().ToTable("News");
+            modelBuilder.Entity<UserPreference>().ToTable("UserPreferences");
+            modelBuilder.Entity<Token>().ToTable("Tokens");
+            
+            // 配置Token与User的关系，避免级联删除
+            modelBuilder.Entity<Token>()
+                .HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+                
+            // 仅为MySQL配置字符集
+            if (isMySql)
+            {
+                modelBuilder.Entity<User>().HasCharSet("utf8mb4");
+                modelBuilder.Entity<Category>().HasCharSet("utf8mb4");
+                modelBuilder.Entity<News>().HasCharSet("utf8mb4");
+                modelBuilder.Entity<UserPreference>().HasCharSet("utf8mb4");
+                modelBuilder.Entity<Token>().HasCharSet("utf8mb4");
+            }
 
             // 种子数据 - 添加默认管理员
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
                     Id = 1,
-                    Email = "admin@school.edu",
+                    Email = "2964959746@qq.com",
+                    Username = "admin",
+                    PasswordHash = "000000", // 临时密码，将在首次启动时更新为正确哈希
+                    UsePasswordLogin = true,
                     RegisteredAt = DateTime.UtcNow,
                     IsAdmin = true
                 }

@@ -1,0 +1,26 @@
+@model IEnumerable<Campus_News_Feed.Models.Domain.Category>
+@{
+    ViewData["Title"] = "新闻分类";
+}
+
+<div class="mb-4">
+    <h2>新闻分类</h2>
+    <p class="text-muted">选择分类浏览相关新闻</p>
+</div>
+
+<div class="row">
+    @foreach (var category in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@category.Name</h5>
+                    <p class="card-text">@category.Description</p>
+                </div>
+                <div class="card-footer">
+                    <a href="@Url.Action("ByCategory", "News", new { categoryId = category.Id })" class="btn btn-primary" target="_blank">浏览此分类</a>
+                </div>
+            </div>
+        </div>
+    }
+</div> 

@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "验证注册";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>注册验证</h2>
+            </div>
+            <div class="card-body text-center">
+                @if (ViewBag.Success == true)
+                {
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: green;"></i>
+                    </div>
+                    <h4>注册成功！</h4>
+                    
+                    @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+                    {
+                        <p>@ViewBag.SuccessMessage</p>
+                    }
+                    else
+                    {
+                        <p>您的账号已成功验证。</p>
+                    }
+                    
+                    <div class="mt-4">
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-primary">立即登录</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-4">
+                        <i class="bi bi-x-circle-fill" style="font-size: 3rem; color: red;"></i>
+                    </div>
+                    <h4>验证失败</h4>
+                    
+                    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                    {
+                        <p>@ViewBag.ErrorMessage</p>
+                    }
+                    else
+                    {
+                        <p>您的注册链接无效或已过期。</p>
+                    }
+                    
+                    <div class="mt-4">
+                        <a asp-controller="Auth" asp-action="Register" class="btn btn-primary">重新注册</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">返回首页</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

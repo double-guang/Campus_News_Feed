@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "用户登录";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>用户登录</h2>
+                <p class="text-muted mb-0">普通用户使用学校邮箱登录</p>
+            </div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                
+                <form method="post" asp-controller="Auth" asp-action="Login" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">邮箱地址</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="请输入您的吉林大学邮箱" required>
+                            <div class="invalid-feedback">请输入有效的邮箱地址</div>
+                        </div>
+                        <div class="form-text mt-2">
+                            系统仅支持吉林大学邮箱：@(string.Join(", ", new string[] { "@mails.jlu.edu.cn", "@jlu.edu.cn" }))
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mb-3">
+                        <strong>无密码登录系统</strong> - 我们将向您的邮箱发送一个登录链接，点击即可安全登录。
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">发送登录链接</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <div class="mb-2">没有账号？<a asp-controller="Auth" asp-action="Register">立即注册</a></div>
+                <div class="small text-muted">管理员？<a asp-controller="Admin" asp-action="Login">前往管理员登录</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+// 表单验证
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+} 

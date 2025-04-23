@@ -1,0 +1,332 @@
+/* 莫兰迪色系变量 */
+:root {
+  --morandigreen-100: #e8efe8;
+  --morandigreen-200: #d1e0d3;
+  --morandigreen-300: #b9d0be;
+  --morandigreen-400: #a2c1aa;
+  --morandigreen-500: #8bb196;
+  --morandigreen-600: #748e7c;
+  --morandigreen-700: #5d6b62;
+  --morandigreen-800: #455148;
+  --morandigreen-900: #2e382f;
+  
+  --morandiwhite-100: #ffffff;
+  --morandiwhite-200: #f7f7f5;
+  --morandiwhite-300: #efefeb;
+  --morandiwhite-400: #e7e7e1;
+  --morandiwhite-500: #dededa;
+  
+  --morandigray-100: #dcdbd7;
+  --morandigray-200: #c3c1bc;
+  --morandigray-300: #aaa8a2;
+  --morandigray-400: #918e87;
+  --morandigray-500: #78756d;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: var(--morandiwhite-200);
+  color: var(--morandigreen-900);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 导航栏样式 */
+.navbar {
+  background-color: var(--morandigreen-700) !important;
+  border-bottom: 1px solid var(--morandigreen-800) !important;
+}
+
+.navbar-brand {
+  color: var(--morandiwhite-100) !important;
+  font-weight: 600;
+}
+
+.nav-link {
+  color: var(--morandiwhite-200) !important;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--morandiwhite-100) !important;
+  background-color: var(--morandigreen-600) !important;
+  border-radius: 4px;
+}
+
+.nav-link.active {
+  color: var(--morandiwhite-100) !important;
+  background-color: var(--morandigreen-600) !important;
+  border-radius: 4px;
+}
+
+/* 管理后台按钮 */
+.nav-link.bg-warning {
+  background-color: var(--morandigreen-300) !important;
+  color: var(--morandigreen-900) !important;
+}
+
+.bg-morandigreen {
+  background-color: var(--morandigreen-300) !important;
+  color: var(--morandigreen-900) !important;
+}
+
+/* 管理员登录按钮 */
+.btn-warning {
+  background-color: var(--morandigreen-300) !important;
+  border-color: var(--morandigreen-400) !important;
+  color: var(--morandigreen-900) !important;
+}
+
+/* 卡片样式 */
+.card {
+  border-color: var(--morandigreen-200);
+  background-color: var(--morandiwhite-100);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  background-color: var(--morandigreen-100) !important;
+  color: var(--morandigreen-700);
+  border-bottom: 1px solid var(--morandigreen-200);
+}
+
+/* 按钮样式 */
+.btn-primary {
+  background-color: var(--morandigreen-500) !important;
+  border-color: var(--morandigreen-600) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--morandigreen-600) !important;
+  border-color: var(--morandigreen-700) !important;
+}
+
+.btn-success {
+  background-color: var(--morandigreen-400) !important;
+  border-color: var(--morandigreen-500) !important;
+}
+
+.btn-success:hover {
+  background-color: var(--morandigreen-500) !important;
+  border-color: var(--morandigreen-600) !important;
+}
+
+.btn-outline-primary {
+  color: var(--morandigreen-600) !important;
+  border-color: var(--morandigreen-500) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--morandigreen-500) !important;
+  border-color: var(--morandigreen-600) !important;
+  color: white !important;
+}
+
+.btn-secondary {
+  background-color: var(--morandigray-200) !important;
+  border-color: var(--morandigray-300) !important;
+  color: var(--morandigreen-800) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--morandigray-300) !important;
+  border-color: var(--morandigray-400) !important;
+  color: var(--morandigreen-900) !important;
+}
+
+/* 表格样式 */
+.table {
+  color: var(--morandigreen-800);
+}
+
+.table-light {
+  background-color: var(--morandigreen-100) !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--morandigreen-100) !important;
+}
+
+/* 列表组项目 */
+.list-group-item {
+  border-color: var(--morandigreen-200);
+}
+
+.list-group-item:hover {
+  background-color: var(--morandigreen-100);
+}
+
+.list-group-item-action:hover {
+  background-color: var(--morandigreen-100);
+}
+
+/* 分页导航 */
+.pagination .page-link {
+  color: var(--morandigreen-600);
+  border-color: var(--morandigreen-200);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--morandigreen-500) !important;
+  border-color: var(--morandigreen-500) !important;
+}
+
+.pagination .page-link:hover {
+  background-color: var(--morandigreen-100);
+  color: var(--morandigreen-700);
+}
+
+/* 导航标签 */
+.nav-tabs .nav-link {
+  color: var(--morandigreen-900);
+  background-color: var(--morandiwhite-300);
+  border: 1px solid var(--morandigreen-200);
+  margin-right: 5px;
+  transition: all 0.2s ease;
+  border-radius: 4px 4px 0 0;
+  font-weight: 600;
+  text-shadow: none;
+  padding: 8px 16px;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* 选项卡图标样式 */
+.nav-tabs .nav-link i {
+  margin-right: 5px;
+  font-size: 0.9em;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: var(--morandigreen-400);
+  background-color: var(--morandiwhite-100);
+  box-shadow: 0 0 0 2px rgba(139, 177, 150, 0.3);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--morandiwhite-100) !important;
+  background-color: var(--morandigreen-700) !important;
+  border-color: var(--morandigreen-700) !important;
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* 表单控件 */
+.form-control:focus {
+  border-color: var(--morandigreen-400);
+  box-shadow: 0 0 0 0.25rem rgba(139, 177, 150, 0.25);
+}
+
+.form-select:focus {
+  border-color: var(--morandigreen-400);
+  box-shadow: 0 0 0 0.25rem rgba(139, 177, 150, 0.25);
+}
+
+/* 徽章 */
+.badge.bg-primary {
+  background-color: var(--morandigreen-500) !important;
+}
+
+/* 页脚 */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+  background-color: var(--morandiwhite-100);
+  border-top: 1px solid var(--morandigreen-200);
+  color: var(--morandigreen-600);
+}
+
+/* 文本颜色 */
+.text-muted {
+  color: var(--morandigray-400) !important;
+}
+
+.text-morandigreen {
+  color: var(--morandigreen-700) !important;
+}
+
+/* 模态框 */
+.modal-header {
+  background-color: var(--morandigreen-100);
+  border-bottom: 1px solid var(--morandigreen-200);
+}
+
+.login-btn {
+  background-color: var(--morandigreen-500);
+  color: var(--morandiwhite-100);
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.login-btn:hover {
+  background-color: var(--morandigreen-600);
+  color: var(--morandiwhite-100);
+  text-decoration: none;
+}
+
+/* 搜索与筛选展开箭头颜色 */
+.card-header .btn-link {
+  color: var(--morandigreen-500) !important;
+  transition: all 0.2s ease;
+}
+
+.card-header .btn-link:hover {
+  color: var(--morandigreen-600) !important;
+  transform: scale(1.1);
+}
+
+/* 绿色箭头特定样式 */
+.bi-arrows-expand {
+  color: var(--morandigreen-500);
+}
+
+/* 导航标签 - 排序选项卡特定样式 - 高优先级 */
+.nav-tabs .nav-link:not(.active) {
+  color: #455148 !important;
+  font-weight: 600 !important;
+  background-color: var(--morandiwhite-300);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--morandiwhite-100) !important;
+  background-color: var(--morandigreen-700) !important;
+  border-color: var(--morandigreen-700) !important;
+  font-weight: 600;
+}
+
+/* 深绿色卡片标题 */
+.card-header-dark-green {
+  background-color: var(--morandigreen-800) !important;
+  color: var(--morandiwhite-100) !important;
+  border-bottom: 1px solid var(--morandigreen-900);
+}
+
+/* 浅绿色卡片标题-深色文字 */
+.card-header-light-green {
+  background-color: var(--morandigreen-100) !important; 
+  color: var(--morandigreen-800) !important;
+  border-bottom: 1px solid var(--morandigreen-200);
+  font-weight: 600;
+} 

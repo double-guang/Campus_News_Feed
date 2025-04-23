@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "登录确认";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>登录确认</h2>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="bi bi-envelope-check" style="font-size: 3rem; color: green;"></i>
+                </div>
+                <h4>登录链接已发送</h4>
+                <p>我们已向您的邮箱发送了一封登录邮件，请查收并点击邮件中的链接完成登录。</p>
+                <p>如果您没有收到邮件，请检查垃圾邮件文件夹。</p>
+                <p class="text-muted">登录成功后，刷新此页面将返回首页。</p>
+            </div>
+            <div class="card-footer text-center">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">返回首页</a>
+            </div>
+        </div>
+    </div>
+</div> 
